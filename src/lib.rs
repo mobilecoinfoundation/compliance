@@ -52,16 +52,36 @@ pub mod mc_compliance {
   // Fetch from ipinfo.io
   struct IpInfoIoFetch;
 
-  // Fetch from my.ip
-  struct MyIpFetch;
+  // Fetch from ipwho.is
+  struct IpWhoIs;
 
-  impl HostInfoFetcher for MyIpFetch {
+  impl HostInfoFetcher for IpWhoIs {
     fn ip_info_fetcher(&self) -> Result<HostInfo, ConfigError> {
-      let hi: HostInfo = HostInfo {
-        country_code: "YA".to_string(),
-        region: String::from(""),
+      let client = Client::builder().gzip(true).use_rustls_tls().build()?;
+      let mut json_headers = HeaderMap::new();
+      json_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+      let response = client
+        .get("https://ipwho.is/")
+        .headers(json_headers)
+        .send()?
+        .error_for_status()?;
+      let data = response.text()?;
+      let data_json: serde_json::Value = serde_json::from_str(&data)?;
+
+      let data_missing_err = Err(ConfigError::DataMissing(data_json.to_string()));
+      let country: &str = match data_json["country_code"].as_str() {
+        Some(c) => c,
+        None => return data_missing_err,
       };
-      Ok(hi)
+      let region: &str = match data_json["region_code"].as_str() {
+        Some(r) => r,
+        None => return data_missing_err,
+      };
+
+      Ok(HostInfo {
+        country_code: String::from(country),
+        region: String::from(region),
+      })
     }
   }
 
@@ -95,11 +115,15 @@ pub mod mc_compliance {
     }
   }
 
+  /// https://icanhazip.com/ - returns only IP, not enough
+  /// https://api.iplocation.net/?ip=8.8.8.8 - country only, no region
+  /// https://ipbase.com/ - requires free plan sign-up
+
   /// Validates
   pub fn validate_host() -> Result<(), ConfigError> {
     const FETCHERS: [&'static dyn HostInfoFetcher; 2] = [
       &IpInfoIoFetch {},
-      &MyIpFetch {}
+      &IpWhoIs {}
     ];
 
     for fetcher in FETCHERS {
