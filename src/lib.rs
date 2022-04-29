@@ -71,10 +71,7 @@ pub mod mc_compliance {
       let data_json: serde_json::Value = serde_json::from_str(&data)?;
 
       let data_missing_err = Err(ConfigError::DataMissing(data_json.to_string()));
-      let country: &str = match data_json["country_code"].as_str() {
-        Some(c) => c,
-        None => return data_missing_err,
-      };
+      let country = data_json["country_code"].as_str().ok_or_else(|| ConfigError::DataMissing(data_json.to_string())?;
       let region: &str = match data_json["region_code"].as_str() {
         Some(r) => r,
         None => return data_missing_err,
