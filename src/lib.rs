@@ -4,6 +4,7 @@
 
 /// Compliance
 mod common;
+
 pub use common::{ConfigError, Location, LocationProvider};
 
 mod ip_info;
@@ -17,15 +18,15 @@ use crate::ip_who::IpWhoIs;
 use crate::us_ofac::validate_country_code;
 
 fn get_providers() -> Vec<Box<dyn LocationProvider>> {
-    let mut providers: Vec<Box<dyn LocationProvider>> = vec![];
+  let mut providers: Vec<Box<dyn LocationProvider>> = vec![];
 
-    #[cfg(feature = "ip_info_provider")]
-    providers.push(Box::new(IpInfoIoFetch{}));
+  #[cfg(feature = "ip_info_provider")]
+  providers.push(Box::new(IpInfoIoFetch {}));
 
-    #[cfg(feature = "ip_who_provider")]
-    providers.push(Box::new(IpWhoIs{}));
+  #[cfg(feature = "ip_who_provider")]
+  providers.push(Box::new(IpWhoIs {}));
 
-    providers
+  providers
 }
 
 // Note: rejected options
@@ -35,13 +36,13 @@ fn get_providers() -> Vec<Box<dyn LocationProvider>> {
 
 /// Validates
 pub fn validate_host() -> Result<(), ConfigError> {
-    let providers = get_providers();
-    for provider in providers {
-        match provider.location() {
-            Ok(location) => return validate_country_code(&location),
-            _ => continue, // try next fetcher
-        }
+  let providers = get_providers();
+  for provider in providers {
+    match provider.location() {
+      Ok(location) => return validate_country_code(&location),
+      _ => continue, // try next fetcher
     }
+  }
 
-    Err(ConfigError::UnableToFetch)
+  Err(ConfigError::UnableToFetch)
 }
