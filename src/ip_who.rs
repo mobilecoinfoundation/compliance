@@ -1,18 +1,19 @@
-#[cfg(feature = "ip_info_provider")]
-
+use crate::{ConfigError, Location, LocationProvider};
 use reqwest::{
   blocking::Client,
   header::{HeaderMap, HeaderValue, CONTENT_TYPE},
 };
-use crate::{ConfigError, IpInfoIoFetch, Location, LocationProvider};
 
-impl LocationProvider for IpInfoIoFetch {
-  fn ip_info_fetcher(&self) -> Result<Location, ConfigError> {
+// Fetch from ipwho.is
+pub struct IpWhoIs;
+
+impl LocationProvider for IpWhoIs {
+  fn location(&self) -> Result<Location, ConfigError> {
     let client = Client::builder().gzip(true).use_rustls_tls().build()?;
     let mut json_headers = HeaderMap::new();
     json_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
     let response = client
-      .get("https://ipinfo.io/json/")
+      .get("https://ipwho.is/")
       .headers(json_headers)
       .send()?
       .error_for_status()?;
@@ -20,11 +21,10 @@ impl LocationProvider for IpInfoIoFetch {
     let data_json: serde_json::Value = serde_json::from_str(&data)?;
 
     let data_missing_err = Err(ConfigError::DataMissing(data_json.to_string()));
-    let country: &str = match data_json["country"].as_str() {
-      Some(c) => c,
-      None => return data_missing_err,
-    };
-    let region: &str = match data_json["region"].as_str() {
+    let country = data_json["country_code"]
+      .as_str()
+      .ok_or_else(|| ConfigError::DataMissing(data_json.to_string()))?;
+    let region: &str = match data_json["region_code"].as_str() {
       Some(r) => r,
       None => return data_missing_err,
     };
