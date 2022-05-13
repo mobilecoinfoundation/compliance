@@ -42,11 +42,13 @@ impl From<reqwest::Error> for ConfigError {
 }
 
 /// Location data
-#[derive(Clone)]
+#[derive(Clone, serde::Deserialize)]
 pub struct Location {
   /// Country code
+  #[serde(alias = "country")]
   pub country_code: String,
   /// Region
+  #[serde(alias = "region_code")]
   pub region: String,
 }
 
