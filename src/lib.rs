@@ -9,7 +9,9 @@ mod common;
 
 pub use common::{ConfigError, Location, LocationProvider};
 
+#[cfg(feature = "ip_info_provider")]
 mod ip_info;
+#[cfg(feature = "ip_who_provider")]
 mod ip_who;
 mod us_ofac;
 
