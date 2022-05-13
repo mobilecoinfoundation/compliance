@@ -32,8 +32,7 @@ pub fn validate_country_code(location: &Location) -> Result<(), ConfigError> {
 
 #[cfg(test)]
 mod tests {
-  use crate::us_ofac::get_non_passing_entries;
-  use crate::{validate_country_code, ConfigError, Location};
+  use super::*;
 
   #[test]
   fn test_validate_passing_country() {
