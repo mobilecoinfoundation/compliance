@@ -1,3 +1,5 @@
+// Copyright (c) 2022 MobileCoin Foundation
+
 #![deny(missing_docs)]
 
 //! MC compliance check
