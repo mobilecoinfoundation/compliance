@@ -18,15 +18,12 @@ fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
 /// Validates country code
 pub fn validate_country_code(location: &Location) -> Result<(), ConfigError> {
   let err = Err(ConfigError::InvalidCountry);
-  match get_non_passing_entries().entry(location.clone().country_code) {
-    Vacant(_) => Ok(()),
-    Occupied(entry) => match entry.get() {
-      Some(region) => match region.get(location.region.as_str()) {
+  match get_non_passing_entries().get(&location.country_code) {
+    Some(regions) => match regions.get(&location.region) {
         Some(_) => err,
         None => Ok(()),
-      },
-      None => err,
     },
+    None => err,
   }
 }
 
