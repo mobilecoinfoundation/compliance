@@ -78,22 +78,19 @@ mod tests {
   #[test]
   fn test_validate_all_non_passing_countries() {
     let error = Err(ConfigError::InvalidCountry);
-    for country in get_non_passing_entries() {
-      match country.clone().1 {
-        Some(regions) => {
-          for region in regions {
-            let result = validate_country_code(&Location {
-              country_code: country.clone().0,
-              region: region.clone(),
-            });
-            assert_eq!(
-              result, error,
-              "Testing country {} and region {}",
-              country.0, region
-            );
-          }
+    for (country, regions) in get_non_passing_entries() {
+      if let Some(regions) = regions {
+        for region in regions {
+          let result = validate_country_code(&Location {
+            country_code: country.clone(),
+            region: region.clone(),
+          });
+          assert_eq!(
+            result, error,
+            "Unexpected result for country {} and region {}",
+            country, region
+          );
         }
-        _ => {}
       }
     }
   }
