@@ -5,13 +5,13 @@ use std::collections::{HashMap, HashSet};
 fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
   HashMap::from([
     (
-      String::from("UA"),
-      Some(HashSet::from([String::from("Crimea")])),
+      "UA".into(),
+      Some(HashSet::from(["Crimea".into()])),
     ),
-    (String::from("IR"), None),
-    (String::from("SY"), None),
-    (String::from("CU"), None),
-    (String::from("KP"), None),
+    ("IR".into(), None),
+    ("SY".into(), None),
+    ("CU".into(), None),
+    ("KP".into(), None),
   ])
 }
 
