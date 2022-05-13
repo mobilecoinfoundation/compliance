@@ -1,5 +1,4 @@
 use crate::{ConfigError, Location};
-use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::collections::{HashMap, HashSet};
 
 fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
@@ -19,11 +18,14 @@ fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
 pub fn validate_country_code(location: &Location) -> Result<(), ConfigError> {
   let err = Err(ConfigError::InvalidCountry);
   match get_non_passing_entries().get(&location.country_code) {
-    Some(regions) => match regions.get(&location.region) {
+    Some(regions) => match regions {
+      Some(regions) => match regions.get(&location.region) {
         Some(_) => err,
-        None => Ok(()),
+        None => Ok(())
+      },
+      None => err,
     },
-    None => err,
+    None => Ok(()),
   }
 }
 
@@ -35,8 +37,8 @@ mod tests {
   fn test_validate_passing_country() {
     assert_eq!(
       validate_country_code(&Location {
-        country_code: String::from("US"),
-        region: String::from(""),
+        country_code: "US".into(),
+        region: "".into(),
       }),
       Ok(())
     )
@@ -46,8 +48,8 @@ mod tests {
   fn test_validate_non_passing_country_without_region() {
     assert_eq!(
       validate_country_code(&Location {
-        country_code: String::from("CU"),
-        region: String::from(""),
+        country_code: "CU".into(),
+        region: "".into(),
       }),
       Err(ConfigError::InvalidCountry)
     )
@@ -57,8 +59,8 @@ mod tests {
   fn test_validate_passing_country_with_non_passing_region() {
     assert_eq!(
       validate_country_code(&Location {
-        country_code: String::from("UA"),
-        region: String::from("Crimea"),
+        country_code: "UA".into(),
+        region: "Crimea".into(),
       }),
       Err(ConfigError::InvalidCountry)
     )
@@ -68,8 +70,8 @@ mod tests {
   fn test_validate_passing_country_with_passing_region() {
     assert_eq!(
       validate_country_code(&Location {
-        country_code: String::from("UA"),
-        region: String::from("SomeRegion"),
+        country_code: "UA".into(),
+        region: "SomeRegion".into(),
       }),
       Ok(())
     )

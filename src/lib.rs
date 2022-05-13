@@ -50,3 +50,17 @@ pub fn validate_host() -> Result<(), ConfigError> {
 
   Err(ConfigError::UnableToFetch)
 }
+
+#[cfg(feature = "usa_local_test")]
+mod tests {
+  use crate::validate_host;
+
+  #[test]
+  fn usa_test() {
+    assert_eq!(
+      validate_host(),
+      Ok(())
+    )
+  }
+}
+
