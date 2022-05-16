@@ -1,3 +1,5 @@
+// Copyright (c) 2022 MobileCoin Foundation
+
 use crate::{ConfigError, Location};
 use std::collections::{HashMap, HashSet};
 
@@ -19,7 +21,7 @@ pub fn validate_country_code(location: &Location) -> Result<(), ConfigError> {
   let err = Err(ConfigError::InvalidCountry);
   match get_non_passing_entries().get(&location.country_code) {
     Some(regions) => match regions {
-      Some(regions) => match regions.get(&location.region) {
+      Some(regions) => match regions.get(&location.region_code) {
         Some(_) => err,
         None => Ok(())
       },
@@ -38,7 +40,7 @@ mod tests {
     assert_eq!(
       validate_country_code(&Location {
         country_code: "US".into(),
-        region: "".into(),
+        region_code: "".into(),
       }),
       Ok(())
     )
@@ -49,7 +51,7 @@ mod tests {
     assert_eq!(
       validate_country_code(&Location {
         country_code: "CU".into(),
-        region: "".into(),
+        region_code: "".into(),
       }),
       Err(ConfigError::InvalidCountry)
     )
@@ -60,7 +62,7 @@ mod tests {
     assert_eq!(
       validate_country_code(&Location {
         country_code: "UA".into(),
-        region: "Crimea".into(),
+        region_code: "Crimea".into(),
       }),
       Err(ConfigError::InvalidCountry)
     )
@@ -71,7 +73,7 @@ mod tests {
     assert_eq!(
       validate_country_code(&Location {
         country_code: "UA".into(),
-        region: "SomeRegion".into(),
+        region_code: "SomeRegion".into(),
       }),
       Ok(())
     )
@@ -85,7 +87,7 @@ mod tests {
         for region in regions {
           let result = validate_country_code(&Location {
             country_code: country.clone(),
-            region: region.clone(),
+            region_code: region.clone(),
           });
           assert_eq!(
             result, error,

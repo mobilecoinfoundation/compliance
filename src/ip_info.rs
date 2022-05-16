@@ -1,3 +1,5 @@
+// Copyright (c) 2022 MobileCoin Foundation
+
 use crate::{ConfigError, Location, LocationProvider};
 use reqwest::{
   blocking::Client,

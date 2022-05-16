@@ -1,4 +1,6 @@
-/// Error type.
+// Copyright (c) 2022 MobileCoin Foundation
+
+/// Error type
 #[derive(Debug)]
 pub enum ConfigError {
   /// Error parsing json {0}
