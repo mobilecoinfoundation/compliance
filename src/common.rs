@@ -48,8 +48,8 @@ pub struct Location {
   #[serde(alias = "country")]
   pub country_code: String,
   /// Region
-  #[serde(alias = "region_code")]
-  pub region: String,
+  #[serde(alias = "region")]
+  pub region_code: String,
 }
 
 /// Location provider
