@@ -7,7 +7,7 @@
 /// Compliance
 mod common;
 
-pub use common::{ConfigError, Location, LocationProvider};
+pub use common::{Error, Location, LocationProvider};
 
 #[cfg(feature = "ip_info_provider")]
 mod ip_info;
@@ -39,7 +39,7 @@ fn get_providers() -> Vec<Box<dyn LocationProvider>> {
 // https://ipbase.com/ - requires free plan sign-up
 
 /// Validates
-pub fn validate_host() -> Result<(), ConfigError> {
+pub fn validate_host() -> Result<(), Error> {
   let providers = get_providers();
   for provider in providers {
     match provider.location() {
@@ -48,7 +48,7 @@ pub fn validate_host() -> Result<(), ConfigError> {
     }
   }
 
-  Err(ConfigError::UnableToFetch)
+  Err(Error::UnableToFetch)
 }
 
 #[cfg(feature = "usa_local_test")]

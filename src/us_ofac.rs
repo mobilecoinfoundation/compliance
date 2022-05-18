@@ -1,6 +1,6 @@
 // Copyright (c) 2022 MobileCoin Foundation
 
-use crate::{ConfigError, Location};
+use crate::{Error, Location};
 use std::collections::{HashMap, HashSet};
 
 fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
@@ -17,8 +17,8 @@ fn get_non_passing_entries() -> HashMap<String, Option<HashSet<String>>> {
 }
 
 /// Validates country code
-pub fn validate_country_code(location: &Location) -> Result<(), ConfigError> {
-  let err = Err(ConfigError::InvalidCountry);
+pub fn validate_country_code(location: &Location) -> Result<(), Error> {
+  let err = Err(Error::InvalidCountry);
   match get_non_passing_entries().get(&location.country_code) {
     Some(regions) => match regions {
       Some(regions) => match regions.get(&location.region_code) {
@@ -53,7 +53,7 @@ mod tests {
         country_code: "CU".into(),
         region_code: "".into(),
       }),
-      Err(ConfigError::InvalidCountry)
+      Err(Error::InvalidCountry)
     )
   }
 
@@ -64,7 +64,7 @@ mod tests {
         country_code: "UA".into(),
         region_code: "Crimea".into(),
       }),
-      Err(ConfigError::InvalidCountry)
+      Err(Error::InvalidCountry)
     )
   }
 
@@ -81,7 +81,7 @@ mod tests {
 
   #[test]
   fn test_validate_all_non_passing_countries() {
-    let error = Err(ConfigError::InvalidCountry);
+    let error = Err(Error::InvalidCountry);
     for (country, regions) in get_non_passing_entries() {
       if let Some(regions) = regions {
         for region in regions {

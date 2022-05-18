@@ -2,7 +2,7 @@
 
 /// Error type
 #[derive(Debug)]
-pub enum ConfigError {
+pub enum Error {
   /// Error parsing json {0}
   Json(serde_json::Error),
 
@@ -19,25 +19,25 @@ pub enum ConfigError {
   UnableToFetch,
 }
 
-impl PartialEq<ConfigError> for ConfigError {
+impl PartialEq<Error> for Error {
   fn eq(&self, other: &Self) -> bool {
     match (self, other) {
-      (&ConfigError::InvalidCountry, &ConfigError::InvalidCountry) => true,
-      (&ConfigError::Json(ref a), &ConfigError::Json(ref b)) => a.to_string() == b.to_string(),
-      (&ConfigError::UnableToFetch, &ConfigError::UnableToFetch) => true,
-      (&ConfigError::Reqwest(ref a), &ConfigError::Reqwest(ref b)) => a.status() == b.status(),
+      (&Error::InvalidCountry, &Error::InvalidCountry) => true,
+      (&Error::Json(ref a), &Error::Json(ref b)) => a.to_string() == b.to_string(),
+      (&Error::UnableToFetch, &Error::UnableToFetch) => true,
+      (&Error::Reqwest(ref a), &Error::Reqwest(ref b)) => a.status() == b.status(),
       _ => false,
     }
   }
 }
 
-impl From<serde_json::Error> for ConfigError {
+impl From<serde_json::Error> for Error {
   fn from(e: serde_json::Error) -> Self {
     Self::Json(e)
   }
 }
 
-impl From<reqwest::Error> for ConfigError {
+impl From<reqwest::Error> for Error {
   fn from(e: reqwest::Error) -> Self {
     Self::Reqwest(e)
   }
@@ -57,5 +57,5 @@ pub struct Location {
 /// Location provider
 pub trait LocationProvider {
   /// Location fetcher
-  fn location(&self) -> Result<Location, ConfigError>;
+  fn location(&self) -> Result<Location, Error>;
 }
