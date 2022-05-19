@@ -11,11 +11,10 @@ runs:
   steps:
     - name: Install cargo nextest
       uses: taiki-e/install-action@nextest
-    - name: Run MC tests
+    - name: Run tests
       shell: bash
       env:
         RUST_BACKTRACE: 1
-        MC_LOG: debug
       run: |
         cargo nextest run \
             --locked \
