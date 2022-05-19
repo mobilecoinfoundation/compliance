@@ -18,9 +18,9 @@ runs:
   using: composite
   steps:
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: actions-rs/toolchain@v2
       with:
-        # Honors rust-toolchain file, installing that version.
+        toolchain: nightly
         components: ${{ inputs.components }}
         default: ${{ inputs.default }}
         profile: ${{ inputs.profile }}
