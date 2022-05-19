@@ -26,4 +26,4 @@ jobs:
       - name: Setup Rust
         uses: ./.github/actions/setup-rust
       - name: Run tests
-        uses: ./.github/actions/run-mc-tests
+        uses: ./.github/actions/run-tests
