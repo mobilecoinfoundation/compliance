@@ -1,0 +1,24 @@
+name: Run Compliance tests
+
+inputs:
+  args:
+    description: Additional args
+    required: false
+    default:
+
+runs:
+  using: composite
+  steps:
+    - name: Install cargo nextest
+      uses: taiki-e/install-action@nextest
+    - name: Run MC tests
+      shell: bash
+      env:
+        RUST_BACKTRACE: 1
+        MC_LOG: debug
+      run: |
+        cargo nextest run \
+            --locked \
+            --no-fail-fast \
+            ${{ inputs.args }}
+
