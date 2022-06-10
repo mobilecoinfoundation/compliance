@@ -1,5 +1,7 @@
 // Copyright (c) 2022 MobileCoin Foundation
 
+use crate::Configuration;
+
 /// Error type
 #[derive(Debug)]
 pub enum Error {
@@ -57,5 +59,5 @@ pub struct Location {
 /// Location provider
 pub trait LocationProvider {
   /// Location fetcher
-  fn location(&self) -> Result<Location, Error>;
+  fn location(&self, config: &Option<Configuration>) -> Result<Location, Error>;
 }

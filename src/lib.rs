@@ -7,13 +7,16 @@
 /// Compliance
 mod common;
 
+use std::borrow::Borrow;
 pub use common::{Error, Location, LocationProvider};
+use crate::configuration::Configuration;
 
 #[cfg(feature = "ip_info_provider")]
 mod ip_info;
 #[cfg(feature = "ip_who_provider")]
 mod ip_who;
 mod us_ofac;
+mod configuration;
 
 #[cfg(feature = "ip_info_provider")]
 use crate::ip_info::IpInfoIoFetch;
@@ -38,27 +41,43 @@ fn get_providers() -> Vec<Box<dyn LocationProvider>> {
 // https://api.iplocation.net/?ip=8.8.8.8 - country only, no region
 // https://ipbase.com/ - requires free plan sign-up
 
-/// Validates
-pub fn validate_host() -> Result<(), Error> {
-  let providers = get_providers();
-  for provider in providers {
-    match provider.location() {
-      Ok(location) => return validate_country_code(&location),
-      _ => continue, // try next fetcher
+///
+///
+pub struct ComplianceChecker {
+  config: Option<Configuration>,
+}
+
+impl ComplianceChecker {
+  ///
+  /// Creates an instance of the Compliance Checker
+  pub fn new(config: Option<Configuration>) -> Self {
+    Self {
+      config
     }
   }
 
-  Err(Error::UnableToFetch)
+  /// Validates
+  pub fn validate_host(&self) -> Result<(), Error> {
+    let providers = get_providers();
+    for provider in providers {
+      match provider.location(self.config.borrow()) {
+        Ok(location) => return validate_country_code(&location),
+        _ => continue, // try next fetcher
+      }
+    }
+
+    Err(Error::UnableToFetch)
+  }
 }
 
 #[cfg(feature = "usa_local_test")]
 mod tests {
-  use crate::validate_host;
-
   #[test]
   fn usa_test() {
+    let checker = crate::ComplianceChecker::new(None);
+
     assert_eq!(
-      validate_host(),
+      checker.validate_host(),
       Ok(())
     )
   }

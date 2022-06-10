@@ -1,6 +1,7 @@
 // Copyright (c) 2022 MobileCoin Foundation
 
-use crate::{Error, Location, LocationProvider};
+use std::borrow::Borrow;
+use crate::{Configuration, Error, Location, LocationProvider};
 use reqwest::{
   blocking::Client,
   header::{HeaderMap, HeaderValue, CONTENT_TYPE},
@@ -9,7 +10,7 @@ use reqwest::{
 pub struct IpInfoIoFetch;
 
 impl LocationProvider for IpInfoIoFetch {
-  fn location(&self) -> Result<Location, Error> {
+  fn location(&self, config: &Option<Configuration>) -> Result<Location, Error> {
     let mut json_headers = HeaderMap::new();
     json_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
     let client = Client::builder()
@@ -17,8 +18,17 @@ impl LocationProvider for IpInfoIoFetch {
       .gzip(true)
       .use_rustls_tls()
       .build()?;
+
+    let mut url = "https://ipinfo.io/json/".to_string();
+    match config {
+      Some(config) => match config.ip_info_key.borrow() {
+        Some(ip_info_key) => url = url + "?token" + ip_info_key.as_str(),
+        _ => {}
+      },
+      _ => {}
+    }
     let response = client
-      .get("https://ipinfo.io/json/")
+      .get(url)
       .send()?
       .error_for_status()?;
     Ok(response.json()?)
