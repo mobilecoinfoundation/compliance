@@ -7,7 +7,6 @@
 /// Compliance
 mod common;
 
-use std::borrow::Borrow;
 pub use common::{Error, Location, LocationProvider};
 use crate::configuration::Configuration;
 
