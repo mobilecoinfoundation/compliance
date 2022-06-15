@@ -1,6 +1,5 @@
 // Copyright (c) 2022 MobileCoin Foundation
 
-use std::borrow::Borrow;
 use crate::{Configuration, Error, Location, LocationProvider};
 use reqwest::{
   blocking::Client,
