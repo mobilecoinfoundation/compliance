@@ -7,15 +7,15 @@
 /// Compliance
 mod common;
 
-pub use common::{Error, Location, LocationProvider};
 use crate::configuration::Configuration;
+pub use common::{Error, Location, LocationProvider};
 
+mod configuration;
 #[cfg(feature = "ip_info_provider")]
 mod ip_info;
 #[cfg(feature = "ip_who_provider")]
 mod ip_who;
 mod us_ofac;
-mod configuration;
 
 #[cfg(feature = "ip_info_provider")]
 use crate::ip_info::IpInfoIoFetch;
@@ -49,12 +49,10 @@ impl<'a> ComplianceChecker<'a> {
     ///
     /// Creates an instance of the Compliance Checker
     pub fn new(config: Option<&'a Configuration>) -> Self {
-        Self {
-            config
-        }
+        Self { config }
     }
 
-    /// Validates
+    /// Validates the host
     pub fn validate_host(&self) -> Result<(), Error> {
         let providers = get_providers();
         for provider in providers {
@@ -74,10 +72,6 @@ mod tests {
     fn usa_test() {
         let checker = crate::ComplianceChecker::new(None);
 
-        assert_eq!(
-            checker.validate_host(),
-            Ok(())
-        )
+        assert_eq!(checker.validate_host(), Ok(()))
     }
 }
-

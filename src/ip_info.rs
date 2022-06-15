@@ -25,10 +25,7 @@ impl LocationProvider for IpInfoIoFetch {
             }
         }
         let url = format!("https://ipinfo.io/json/{}", suffix);
-        let response = client
-            .get(url)
-            .send()?
-            .error_for_status()?;
+        let response = client.get(url).send()?.error_for_status()?;
         Ok(response.json()?)
     }
 }
