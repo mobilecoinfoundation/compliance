@@ -18,14 +18,13 @@ impl LocationProvider for IpInfoIoFetch {
       .use_rustls_tls()
       .build()?;
 
-    let mut url = "https://ipinfo.io/json/".to_string();
-    match config {
-      Some(config) => match config.ip_info_key.borrow() {
-        Some(ip_info_key) => url = url + "?token" + ip_info_key.as_str(),
-        _ => {}
-      },
-      _ => {}
-    }
+        let mut suffix = String::new();
+        if let Some(config) = config {
+            if let Some(key) = &config.ip_info_key {
+                suffix = format!("?token{}", key);
+            }
+        }
+        let url = format!("https://ipinfo.io/json/{}", suffix);
     let response = client
       .get(url)
       .send()?
