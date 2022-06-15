@@ -59,5 +59,5 @@ pub struct Location {
 /// Location provider
 pub trait LocationProvider {
   /// Location fetcher
-  fn location(&self, config: &Option<Configuration>) -> Result<Location, Error>;
+  fn location(&self, config: Option<&Configuration>) -> Result<Location, Error>;
 }
