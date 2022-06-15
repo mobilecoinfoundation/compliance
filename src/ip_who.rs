@@ -10,7 +10,7 @@ use reqwest::{
 pub struct IpWhoIs;
 
 impl LocationProvider for IpWhoIs {
-  fn location(&self, _: &Option<Configuration>) -> Result<Location, Error> {
+  fn location(&self, _: Option<&Configuration>) -> Result<Location, Error> {
     let mut json_headers = HeaderMap::new();
     json_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
     let client = Client::builder()
