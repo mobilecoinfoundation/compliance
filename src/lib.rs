@@ -55,7 +55,7 @@ impl ComplianceChecker {
     pub fn validate_host(&self) -> Result<(), Error> {
         let providers = get_providers();
         for provider in providers {
-            match provider.location(self.config) {
+            match provider.location(self.config.as_ref()) {
                 Ok(location) => return validate_country_code(&location),
                 _ => continue, // try next fetcher
             }
