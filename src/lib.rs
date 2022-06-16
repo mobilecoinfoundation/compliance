@@ -41,8 +41,8 @@ fn get_providers() -> Vec<Box<dyn LocationProvider>> {
 // https://ipbase.com/ - requires free plan sign-up
 
 /// Main object responsible for validating the country and region
-pub struct ComplianceChecker<'a> {
-    config: Option<&'a Configuration>,
+pub struct ComplianceChecker {
+    config: Option<Configuration>,
 }
 
 impl<'a> ComplianceChecker<'a> {
