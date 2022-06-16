@@ -45,10 +45,9 @@ pub struct ComplianceChecker {
     config: Option<Configuration>,
 }
 
-impl<'a> ComplianceChecker<'a> {
-    ///
+impl ComplianceChecker {
     /// Creates an instance of the Compliance Checker
-    pub fn new(config: Option<&'a Configuration>) -> Self {
+    pub fn new(config: Option<Configuration>) -> Self {
         Self { config }
     }
 
