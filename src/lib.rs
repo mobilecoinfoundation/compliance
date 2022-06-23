@@ -1,4 +1,4 @@
-// Copyright (c) 2022 MobileCoin Foundation
+// Copyright (c) 2022 The MobileCoin Foundation
 
 #![deny(missing_docs)]
 
@@ -9,6 +9,7 @@ mod common;
 
 pub use common::{Error, Location, LocationProvider};
 
+mod configuration;
 #[cfg(feature = "ip_info_provider")]
 mod ip_info;
 #[cfg(feature = "ip_who_provider")]
@@ -19,18 +20,19 @@ mod us_ofac;
 use crate::ip_info::IpInfoIoFetch;
 #[cfg(feature = "ip_who_provider")]
 use crate::ip_who::IpWhoIs;
+use crate::configuration::Configuration;
 use crate::us_ofac::validate_country_code;
 
 fn get_providers() -> Vec<Box<dyn LocationProvider>> {
-  let mut providers: Vec<Box<dyn LocationProvider>> = vec![];
+    let mut providers: Vec<Box<dyn LocationProvider>> = vec![];
 
-  #[cfg(feature = "ip_info_provider")]
-  providers.push(Box::new(IpInfoIoFetch {}));
+    #[cfg(feature = "ip_info_provider")]
+    providers.push(Box::new(IpInfoIoFetch {}));
 
-  #[cfg(feature = "ip_who_provider")]
-  providers.push(Box::new(IpWhoIs {}));
+    #[cfg(feature = "ip_who_provider")]
+    providers.push(Box::new(IpWhoIs {}));
 
-  providers
+    providers
 }
 
 // Note: rejected options
@@ -38,29 +40,37 @@ fn get_providers() -> Vec<Box<dyn LocationProvider>> {
 // https://api.iplocation.net/?ip=8.8.8.8 - country only, no region
 // https://ipbase.com/ - requires free plan sign-up
 
-/// Validates
-pub fn validate_host() -> Result<(), Error> {
-  let providers = get_providers();
-  for provider in providers {
-    match provider.location() {
-      Ok(location) => return validate_country_code(&location),
-      _ => continue, // try next fetcher
-    }
-  }
+/// Main object responsible for validating the country and region
+pub struct ComplianceChecker {
+    config: Option<Configuration>,
+}
 
-  Err(Error::UnableToFetch)
+impl ComplianceChecker {
+    /// Creates an instance of the Compliance Checker
+    pub fn new(config: Option<Configuration>) -> Self {
+        Self { config }
+    }
+
+    /// Validates the host
+    pub fn validate_host(&self) -> Result<(), Error> {
+        let providers = get_providers();
+        for provider in providers {
+            match provider.location(self.config.as_ref()) {
+                Ok(location) => return validate_country_code(&location),
+                _ => continue, // try next fetcher
+            }
+        }
+
+        Err(Error::UnableToFetch)
+    }
 }
 
 #[cfg(feature = "usa_local_test")]
 mod tests {
-  use crate::validate_host;
+    #[test]
+    fn usa_test() {
+        let checker = crate::ComplianceChecker::new(None);
 
-  #[test]
-  fn usa_test() {
-    assert_eq!(
-      validate_host(),
-      Ok(())
-    )
-  }
+        assert_eq!(checker.validate_host(), Ok(()))
+    }
 }
-

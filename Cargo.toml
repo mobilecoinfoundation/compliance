@@ -11,6 +11,7 @@ ip_who_provider=[]
 usa_local_test=["ip_info_provider", "ip_who_provider"]
 
 [dependencies]
+clap = { version = "3.2.6", features = ["derive", "env"] }
 reqwest = { version = "0.11", default-features = false, features = ["blocking", "rustls-tls", "gzip", "json"] }
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
