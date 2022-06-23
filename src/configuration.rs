@@ -5,6 +5,6 @@ use clap::Parser;
 /// Compliance crate configuration
 #[derive(Parser, Debug)]
 pub struct Configuration {
-    #[clap(short, long)]
+    #[clap(short, long, env = "MC_IP_INFO_KEY")]
     pub ip_info_key: Option<String>,
 }
