@@ -1,4 +1,4 @@
-/// Copyright 2022 MobileCoin Foundation
+// Copyright (c) 2022 The MobileCoin Foundation
 
 use clap::Parser;
 

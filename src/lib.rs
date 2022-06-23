@@ -1,4 +1,4 @@
-// Copyright (c) 2022 MobileCoin Foundation
+// Copyright (c) 2022 The MobileCoin Foundation
 
 #![deny(missing_docs)]
 
@@ -7,7 +7,6 @@
 /// Compliance
 mod common;
 
-use crate::configuration::Configuration;
 pub use common::{Error, Location, LocationProvider};
 
 mod configuration;
@@ -21,6 +20,7 @@ mod us_ofac;
 use crate::ip_info::IpInfoIoFetch;
 #[cfg(feature = "ip_who_provider")]
 use crate::ip_who::IpWhoIs;
+use crate::configuration::Configuration;
 use crate::us_ofac::validate_country_code;
 
 fn get_providers() -> Vec<Box<dyn LocationProvider>> {

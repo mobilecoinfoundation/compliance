@@ -1,4 +1,4 @@
-// Copyright (c) 2022 MobileCoin Foundation
+// Copyright (c) 2022 The MobileCoin Foundation
 
 use crate::{Error, Location};
 use std::collections::{HashMap, HashSet};
