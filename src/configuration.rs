@@ -1,3 +1,5 @@
+/// Copyright 2022 MobileCoin Foundation
+
 use clap::Parser;
 
 /// Compliance crate configuration
